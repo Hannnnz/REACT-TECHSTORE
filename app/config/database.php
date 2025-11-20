@@ -58,20 +58,14 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 */
 
 $database['main'] = array(
-    'driver'	=> 'mysql',
-/*  'hostname'  => getenv("DB_HOST"),
-    'port'		=> getenv("DB_PORT"),
-    'username'	=> getenv("DB_USER"),
-    'password'	=> getenv("DB_PASS"),
-    'database'	=> getenv("DB_NAME"),*/
-    'hostname'	=> 'sql302.infinityfree.com',
-    'port'		=> '3306',
-    'username'	=> 'if0_40224182',
-    'password'	=> 'AvFfNZ4BVJ',
-    'database'	=> 'if0_40224182_store',
-    'charset'	=> 'utf8mb4',
-    'dbprefix'	=> '',
-    // Optional for SQLite
+    'driver'    => 'mysql',
+    'hostname'  => 'localhost',
+    'port'      => '3306',      // standard MySQL port
+    'username'  => 'root',      // default WAMP username
+    'password'  => '',          // default WAMP password is empty
+    'database'  => 'if0_40224182',  // IMPORTANT: Change this to your local database name
+    'charset'   => 'utf8mb4',
+    'dbprefix'  => '',
     'path'      => ''
 );
 
