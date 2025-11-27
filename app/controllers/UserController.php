@@ -11,6 +11,8 @@ class UserController extends Controller {
     {
         parent::__construct();
         $this->call->database();
+        $this->call->model('ProductModel');
+        $this->call->model('TransactionModel');
         if(segment(2) != 'logout') {
             $id = $this->lauth->get_user_id();
             if(!logged_in()){
@@ -22,41 +24,84 @@ class UserController extends Controller {
                 }
             }
             else if(logged_in() && $this->lauth->get_role($id) == "admin") {
-                redirect('home');
+                redirect('');
             }
         }
     }
 
     public function index(){
-        $this->call->view('home_user');
+        $data['products'] = $this->ProductModel->stock();
+        $this->call->view('home_user', $data);
     }
 
-    function trash(){
-        $page = 1;
-        if(isset($_GET['page']) && ! empty($_GET['page'])) {
-            $page = $this->io->get('page');
+    public function transaction()
+{
+    if ($this->io->method() == 'post') {
+
+        // Get POST data
+        $total = $this->io->post('total');
+        $cashier = $this->io->post('cashier');
+        $time = $this->io->post('transaction_time');
+        $itemsJson = $this->io->post('items'); // cart items
+        $base64Image = $this->io->post('receipt_image'); // receipt screenshot (base64)
+
+        // --- SAVE RECEIPT IMAGE ---
+        $filename = null;
+
+        if (!empty($base64Image)) {
+            // remove base64 prefix
+            $cleaned = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
+
+            // decode image
+            $imageData = base64_decode($cleaned);
+
+            // ensure upload directory exists
+            $uploadDir = ROOT_DIR.PUBLIC_DIR.'/uploads/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            // generate file name
+            $filename = 'receipt_' . time() . '.png';
+            $filepath = $uploadDir . $filename;
+
+            // save file
+            file_put_contents($filepath, $imageData);
         }
 
-        $q = '';
-        if(isset($_GET['q']) && ! empty($_GET['q'])) {
-            $q = trim($this->io->get('q'));
+        // --- INSERT TRANSACTION ---
+        $data = [
+            'total'   => $total,
+            'cashier' => $cashier,
+            'date'    => $time,
+            'receipt'     => $filename  // saved screenshot file
+        ];
+
+        $this->TransactionModel->insert($data);
+
+        // --- UPDATE PRODUCT STOCKS ---
+        $items = json_decode($itemsJson, true);
+
+        foreach ($items as $item) {
+
+            $id = $item['product_id'];
+            $qty = $item['qty'];
+
+            $product = $this->ProductModel->find($id);
+
+            $newStock = $product['stock'] - $qty;
+            $newSold = $product['sold'] + $qty;
+
+            $updateProduct = [
+                'stock' => $newStock,
+                'sold'  => $newSold
+            ];
+
+            $this->ProductModel->update($id, $updateProduct);
         }
 
-        $records_per_page = 5;
-
-        $all = $this->CrudModel->page_trash($q, $records_per_page, $page);
-        $data['all'] = $all['records'];
-        $total_rows = $all['total_rows'];
-        $this->pagination->set_options([
-            'first_link'     => 'First',
-            'last_link'      => 'Last',
-            'next_link'      => '→',
-            'prev_link'      => '←',
-            'page_delimiter' => '&page='
-        ]);
-        $this->pagination->set_theme('bootstrap'); // or 'tailwind', or 'custom'
-        $this->pagination->initialize($total_rows, $records_per_page, $page,'trash-user/?q='.$q);
-        $data['page'] = $this->pagination->paginate();
-        $this->call->view('trash_user', $data);
+        // return to POS
+        redirect('pos');
     }
+}
 }

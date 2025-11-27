@@ -2,7 +2,7 @@
         <div class="modal-content">
             <div class="modal-header"><h2>Add New Product</h2><button class="modal-close-btn" onclick="closeModal('modal-add-product')">&times;</button></div>
             <div class="modal-body">
-                <form id="form-add-product" method="post" action="<?=site_url('create'); ?>" autocomplete="off">
+                <form id="form-add-product" method="post" action="<?=site_url('product/add'); ?>" autocomplete="off">
                     <div class="form-group">
                         <label for="product_name">Product Name</label>
                         <div class="input-group"><i class="fas fa-tag"></i><input type="text" id="product_name" name="product_name" placeholder="Enter product name" required></div>
@@ -34,11 +34,11 @@
                         <label for="product_id">Barcode</label>
                         <div class="input-group"><i class="fas fa-barcode"></i><input type="text" id="product_id" name="product_id" placeholder="Scan unique product code" required></div>
                     </div>
-                </form>
             </div>
             <div class="modal-footer">
-                <button class="action-btn modal-cancel-btn" onclick="closeModal('modal-add-product')">Cancel</button>
-                <button class="action-btn primary-btn" onclick="handleFormSubmit('modal-add-product')">Save Product</button>
+                <button type="button" class="action-btn modal-cancel-btn" onclick="closeModal('modal-add-product')">Cancel</button>
+                <button type="submit" class="action-btn primary-btn">Save Product</button>
             </div>
+            </form>
         </div>
     </div>

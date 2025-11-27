@@ -213,6 +213,40 @@ class Lauth {
     	}
 	}
 
+	/**
+	 * Get Email
+	 * @return string Role from Session
+	 */
+	public function get_email($user_id)
+	{
+		$row = $this->LAVA->db
+						->table('users')
+						->select('email')					
+    					->where('id', $user_id)
+    					->limit(1)
+    					->get();
+    	if($row) {
+    		return html_escape($row['email']);
+    	}
+	}
+
+	/**
+	 * Get Email Verified
+	 * @return string Role from Session
+	 */
+	public function get_email_verified($user_id)
+	{
+		$row = $this->LAVA->db
+						->table('users')
+						->select('email_verified_at')					
+    					->where('id', $user_id)
+    					->limit(1)
+    					->get();
+    	if($row) {
+    		return html_escape($row['email_verified_at']);
+    	}
+	}
+
 	public function set_logged_out() {
 		$data = array(
 			'user_id' => $this->get_user_id(),
@@ -341,6 +375,34 @@ class Lauth {
 						->where('email', $email)
 						->where_null('email_verified_at')
 						->delete();
+	}
+
+	public function reset_admin($password, $email, $pass, $pass2)
+	{				
+    	$row = $this->LAVA->db
+    					->table('users') 					
+    					->where('id', get_user_id())
+    					->get();
+		if($row) {
+			if(password_verify($password, $row['password'])) {
+				$update = [];
+				if($email != "") {
+					$update['email'] = $email;
+				}
+				if($pass == $pass2 && $pass != "" && $pass2 != "") {
+					$update['password'] = $this->passwordhash($pass);
+				}
+
+				if(!empty($update)){
+					return $this->LAVA->db
+							->table('users')
+							->where('id', get_user_id())
+							->update($update);
+				}
+			} else {
+				return false;
+			}
+		}
 	}
 }
 

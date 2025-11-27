@@ -5,7 +5,7 @@
                 <button class="modal-close-btn" onclick="closeModal('settings-modal')">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="account-settings-form">
+                <form id="account-settings-form" method="post" action="<?=site_url('settings'); ?>" autocomplete="off">
                     <div class="form-group">
                         <label for="username">Username</label>
                         <div class="input-group">
@@ -17,7 +17,7 @@
                         <label for="email">Email</label>
                         <div class="input-group">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" value="admin@techstore.com">
+                            <input type="email" id="email" name="email" value="<?= get_email(get_user_id()) ?>">
                         </div>
                     </div>
                     
@@ -27,7 +27,7 @@
                         <label for="current-password">Current Password</label>
                         <div class="input-group">
                             <i class="fas fa-shield-alt"></i>
-                            <input type="password" id="current-password" placeholder="Enter current password">
+                            <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
                         </div>
                     </div>
                     
@@ -36,14 +36,14 @@
                             <label for="new-password">New Password</label>
                             <div class="input-group">
                                 <i class="fas fa-lock"></i>
-                                <input type="password" id="new-password" placeholder="Enter new password">
+                                <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="confirm-password">Confirm New Password</label>
                             <div class="input-group">
                                 <i class="fas fa-lock"></i>
-                                <input type="password" id="confirm-password" placeholder="Confirm new password">
+                                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
                             </div>
                         </div>
                     </div>

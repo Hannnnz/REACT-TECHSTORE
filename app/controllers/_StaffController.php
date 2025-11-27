@@ -23,7 +23,7 @@ class _StaffController extends Controller {
                 }
             }
             else if(logged_in() && $this->lauth->get_role($id) == "user") {
-                redirect('home-user');
+                redirect('pos');
             }
         }
     }
@@ -150,6 +150,23 @@ class _StaffController extends Controller {
                 }*/
 
                 redirect();
+        }
+    }
+
+    function user_deactivate($id){
+        if($this->lauth->get_role(get_user_id()) == "admin") {
+            if($this->io->method() == 'post'){
+                    $char = $this->StaffModel->find($id);
+                    $data = [
+                    'role' => "declined"
+                    ];
+                    $template = file_get_contents(ROOT_DIR.PUBLIC_DIR.'/templates/account_deactivated.html');
+                    $this->StaffModel->update($id, $data);
+                    SendMail("TechStore", get_email(get_user_id()), "Account Termination", $template, $char['email']);
+                    $this->session->set_flashdata('alert', 'info');
+                    $this->session->set_flashdata('message', 'Account deactivated! Email sent.');
+                    redirect();
+            }
         }
     }
 }

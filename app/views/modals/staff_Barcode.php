@@ -6,7 +6,7 @@
                 <div style="margin: 20px 0; background:#fff; padding:10px; display:inline-block; border:1px solid #ccc;">
                     <i class="fas fa-barcode" style="font-size:4rem; color:#000"></i>
                 </div>
-                <p>ID: MCC2023-00695</p>
+                <p>ID: 17</p>
             </div>
             <div class="modal-footer">
                 <button class="action-btn modal-cancel-btn" onclick="closeModal('modal-user-barcode')">Close</button>

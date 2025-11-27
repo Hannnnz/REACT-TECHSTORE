@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 
+#salesPieChart {
+    background-color: var(--clr-card-bg, #111827);
+    border-radius: 12px;
+}
+
+
 :root {
     /* Light Mode */
     --clr-primary: #000;    
@@ -44,21 +50,16 @@ body {
     font-family: var(--font-body);
     background-color: var(--clr-background);
     color: var(--clr-text-main);
-    display: block;
+    display: flex;
     min-height: 100vh;
     transition: all 0.3s ease;
     line-height: 1.5;
 }
 
-#react-dashboard-root {
-    width: 100%;
+body:not(.ready) {
+    visibility: hidden;
 }
 
-.react-dashboard-app {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
-}
 
 /* --- Sidebar --- */
 #sidebar {
@@ -246,37 +247,6 @@ h2 {
     transition: all 0.3s ease;
 }
 .stat-card:hover { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); transform: translateY(-5px); }
-.react-widget-shell { margin-bottom: 35px; }
-.react-card { position: relative; overflow: hidden; }
-.react-card-inner { display: flex; flex-direction: column; gap: 18px; }
-.react-widget-loading { display: flex; justify-content: space-between; align-items: center; }
-.react-chip-group { display: flex; flex-wrap: wrap; gap: 10px; }
-.react-chip {
-    padding: 6px 14px; border-radius: 999px; font-size: 0.8rem;
-    font-weight: 600; background-color: var(--clr-hover-bg); color: var(--clr-text-main);
-    border: 1px solid var(--clr-border);
-}
-.react-widget-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.react-widget-actions button {
-    border: 1px solid var(--clr-border); background-color: var(--clr-background);
-    font-weight: 600; font-size: 0.85rem;
-}
-.react-widget-actions button:hover {
-    background-color: var(--clr-primary); color: var(--clr-secondary); border-color: var(--clr-primary);
-}
-.product-summary { margin-bottom: 25px; }
-.inventory-toolbar { flex-wrap: wrap; }
-.inventory-filters { gap: 8px; }
-.react-chip.inventory-chip {
-    border-radius: 999px;
-    border-color: transparent;
-    background-color: var(--clr-hover-bg);
-    cursor: pointer;
-}
-.react-chip.inventory-chip.active {
-    background-color: var(--clr-primary);
-    color: var(--clr-secondary);
-}
 .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .stat-card h3 { font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; color: var(--clr-text-secondary); text-transform: uppercase; letter-spacing: 1px; }
 .stat-icon { font-size: 1.8rem; color: var(--clr-text-secondary); opacity: 0.8; }
@@ -285,10 +255,37 @@ h2 {
 .trend.up { color: var(--clr-success); }
 .trend.down { color: var(--clr-danger); }
 .trend.alert { color: var(--clr-warning); }
-.trend.info { color: var(--clr-info); }
 .inventory-alert { border-left: 5px solid var(--clr-warning); background-color: rgba(245, 158, 11, 0.05); }
 
 /* Charts */
+.report-box {
+    background-color: var(--clr-card-bg);
+    border-radius: 12px;
+    padding: 32px;
+    border: 1px solid var(--clr-border);
+    margin-bottom: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.report-box-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+.report-box h3 {
+    font-family: "Poppins", sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--clr-primary);
+    border-bottom: 1px solid var(--clr-border);
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .placeholder-chart {
     background-color: var(--clr-card-bg); border-radius: 12px; padding: 32px;
     border: 1px solid var(--clr-border); margin-bottom: 24px;
@@ -461,4 +458,46 @@ h2 {
     #content-area { padding: 20px; }
     .stats-grid, .report-box-grid { grid-template-columns: 1fr; }
     .modal-body .form-grid { grid-template-columns: 1fr; gap: 0; }
+}
+
+/* Make select fields match input styles */
+.input-group select {
+    width: 100%;
+    padding: 11px 10px; /* match input padding */
+    border: none; /* remove default border inside input-group */
+    background: transparent; /* inherit background from input-group */
+    color: var(--clr-text-main);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    appearance: none; /* remove default dropdown arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+.input-group select:focus {
+    outline: none;
+}
+
+.input-group {
+    position: relative;
+}
+
+#modal-print-receipt .modal-body img {
+    max-width: 100%;   /* Image won’t exceed modal width */
+    max-height: 70vh;  /* Image height won’t exceed 70% of viewport height */
+    object-fit: contain; /* Keep aspect ratio */
+    display: block;
+    margin: 0 auto;    /* Center horizontally */
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* spacing between elements */
+}
+.toolbar form {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* spacing between select and button */
 }

@@ -8,11 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,400;0,600;0,700;1,100&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <<link rel="stylesheet" href="<?= base_url();?>public/css/pos.css">
+    <link rel="stylesheet" href="<?= base_url();?>public/css/pos.css">
 </head>
 <body class="light-mode pos-body">
 
-    <audio id="beepSound" src="notif.mp3" preload="auto"></audio>
+    <audio id="beepSound" src="<?= base_url(); ?>public/resources/notif.mp3" preload="auto"></audio>
     <div id="toast-container"></div>
 
     <header id="pos-navbar">
@@ -28,7 +28,7 @@
         <div class="pos-controls">
             <div class="cashier-info">
                 <i class="fas fa-user-circle"></i>
-                <span>cindy</span>
+                <span><?= get_username(get_user_id()); ?></span>
                 <span class="status-dot offline" id="status-indicator" title="Clocked Out"></span>
             </div>
             <button id="theme-toggle" class="icon-btn"><i class="fas fa-moon"></i></button>
@@ -136,7 +136,7 @@
             </div>
             <div class="modal-footer">
                 <button class="action-btn modal-cancel-btn" onclick="closeModal('modal-payment')">Cancel</button>
-                <button class="action-btn primary-btn" id="btn-confirm-pay" onclick="processTransaction()" disabled>
+                <button class="action-btn primary-btn" id="btn-confirm-pay" onclick="processTransaction(CASHIER_NAME)" disabled>
                     <i class="fas fa-receipt"></i> Print & Complete
                 </button>
             </div>
@@ -150,7 +150,7 @@
                     <h3>TechStore</h3>
                     <p>Camilmil, Calapan City</p>
                     <p>Date: <span id="rec-date"></span></p>
-                    <p>Cashier: cindy</p>
+                    <p>Cashier: <?= get_username(get_user_id()); ?></p>
                 </div>
                 <hr class="dashed-line">
                 <div id="receipt-items"></div>
@@ -162,11 +162,7 @@
                 </div>
                 <div class="receipt-footer">
                     <p>Thank you for your purchase!</p>
-                    <i class="fas fa-barcode"></i>
                 </div>
-            </div>
-            <div class="modal-footer center-footer">
-                <button class="action-btn primary-btn" onclick="closeModal('modal-receipt')">New Transaction</button>
             </div>
         </div>
     </div>
@@ -203,6 +199,21 @@
         </div>
     </div>
 
+    <form id="transaction-form" action="<?= site_url('pos/transaction'); ?>" method="POST" style="display:none;">
+        <input type="hidden" name="total" id="total">
+        <input type="hidden" name="cashier" id="cashier">
+        <input type="hidden" id="transaction-time" name="transaction_time">
+        <input type="hidden" name="items" id="items"> <!-- JSON string of items -->
+        <input type="hidden" name="receipt_image" id="receipt_image">
+    </form>
+
+    <script>
+        let products = <?= json_encode($products); ?>;
+        const CASHIER_NAME = "<?= get_username(get_user_id()); ?>";
+    </script>
+
     <script src="<?= base_url();?>public/js/pos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 </body>
 </html>

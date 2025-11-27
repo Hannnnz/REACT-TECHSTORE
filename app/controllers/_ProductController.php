@@ -23,7 +23,7 @@ class _ProductController extends Controller {
                 }
             }
             else if(logged_in() && $this->lauth->get_role($id) == "user") {
-                redirect('home-user');
+                redirect('pos');
             }
         }
     }
@@ -59,10 +59,10 @@ class _ProductController extends Controller {
         }
     }
 
-    public function update($id)
+    public function update()
     {
-        $char = $this->ProductModel->find($id);
         if($this->io->method() == 'post'){
+            $key = $this->io->post('id');
             $id = $this->io->post('product_id');
             $name = $this->io->post('product_name');
             $category = $this->io->post('category');
@@ -75,7 +75,9 @@ class _ProductController extends Controller {
                 'price' => $price
                 ];
 
-                $this->ProductModel->update($data);
+                $this->ProductModel->update($key, $data);
+                $this->session->set_flashdata('alert', 'info');
+                $this->session->set_flashdata('message', 'Product updated successfully!');
                 redirect();
         }
     }
@@ -90,6 +92,8 @@ class _ProductController extends Controller {
     function soft_delete($id){
         if($this->lauth->get_role(get_user_id()) == "admin") {
             $this->ProductModel->soft_delete($id);
+            $this->session->set_flashdata('alert', 'info');
+            $this->session->set_flashdata('message', 'Product deleted successfully!');
             redirect();
         }
     }
@@ -130,7 +134,7 @@ class _ProductController extends Controller {
         }
     }
 
-    public function product()
+    public function add()
     {
         if($this->io->method() == 'post'){
             $id = $this->io->post('product_id');
@@ -147,12 +151,8 @@ class _ProductController extends Controller {
                 ];
 
                 $this->ProductModel->insert($data);
-
-                /*if ($this->ProductModel->insert($data)) {
-                    $this->session->set_flashdata('message', 'Product inserted successfully!');
-                } else {
-                    $this->session->set_flashdata('error', 'Something went wrong.');
-                }*/
+                    $this->session->set_flashdata('alert', 'success');
+                    $this->session->set_flashdata('message', 'Product added successfully!');
 
                 redirect();
         }

@@ -18,10 +18,10 @@ class Auth extends Controller {
         if(segment(2) != 'logout') {
             $id = $this->lauth->get_user_id();
             if(logged_in() && $this->lauth->get_role($id) == "admin") {
-                redirect('home');
+                redirect();
             }
             else if(logged_in() && $this->lauth->get_role($id) == "user") {
-                redirect('home-user');
+                redirect('pos');
             }
         }
     }
@@ -36,10 +36,34 @@ class Auth extends Controller {
 			$password = $this->io->post('password');
             $data = $this->lauth->login($email, $password);
             if(empty($data)) {
-				$this->session->set_flashdata(['is_invalid' => 'is-invalid']);
-                $this->session->set_flashdata(['err_message' => 'These credentials do not match our records.']);
+				$this->session->set_flashdata('alert', 'error');
+                $this->session->set_flashdata('message', 'These credentials do not match our records. ');
 			} else {
-				$this->lauth->set_logged_in($data);
+                $row = $this->db
+						->table('users')				
+    					->where('id', $data)
+    					->limit(1)
+    					->get();
+                if($row['email_verified_at'] === NULL){
+                    $this->session->set_flashdata('alert', 'error');
+                    $this->session->set_flashdata('message', 'Please verify your email first. ');
+                    $this->lauth->set_logged_out();
+                    redirect('auth/login');
+                }
+                else if($row['role'] == "unverified"){
+                    $this->session->set_flashdata('alert', 'info');
+                    $this->session->set_flashdata('message', 'Account under review. Please wait for approval in your email. ');
+                    $this->lauth->set_logged_out();
+                    redirect('auth/login');
+                }
+                else if($row['role'] == "declined"){
+                    $this->session->set_flashdata('alert', 'info');
+                    $this->session->set_flashdata('message', 'Your request is declined by the admin. ');
+                    redirect('auth/login');
+                }
+                else{
+                    $this->lauth->set_logged_in($data);
+                }
 			}
             redirect('auth/login');
         } else {
@@ -75,17 +99,19 @@ class Auth extends Controller {
                 if($this->form_validation->run()) {
                     if($this->lauth->register($username, $email, $this->io->post('password'), $email_token)) {
                         $this->send_token_to_email($email, $email_token);
-                        set_flash_alert('success', 'Account created! Please check your email to verify your account.');
+                        $this->session->set_flashdata('alert', 'success');
+                        $this->session->set_flashdata('message', 'Account created! Please check your email to verify your account. ');
                         redirect('auth/login');
                     } else {
                         set_flash_alert('danger', config_item('SQLError'));
+                        redirect('auth/register');
                     }
                 }  else {
                     set_flash_alert('danger', $this->form_validation->errors()); 
                     redirect('auth/register');
                 }
         } else {
-            $this->call->view('auth/login');
+            $this->call->view('auth/register');
         }
         
     }
@@ -117,9 +143,9 @@ class Auth extends Controller {
         $mail->Port       = 465;                                    
 
         //Recipients
-        $mail->setFrom("genshinpromise@gmail.com", "GENSHIN CRUD"); // Sender Email and name
+        $mail->setFrom("genshinpromise@gmail.com", "TechStore"); // Sender Email and name
         $mail->addAddress($email);     //Add a recipient email  
-        $mail->addReplyTo("genshinpromise@gmail.com", "GENSHIN CRUD"); // reply to sender email
+        $mail->addReplyTo("genshinpromise@gmail.com", "TechStore"); // reply to sender email
 
         //Content
         $mail->isHTML(true);               //Set email format to HTML
@@ -134,21 +160,21 @@ class Auth extends Controller {
         $token = $_GET['token'] ?? '';
 
         if (empty($token)) {
-            set_flash_alert('danger', 'Missing verification token.');
+            set_flash_alert('error', 'Missing verification token. ');
             redirect('auth/login');
             return;
         }
 
         if (! $this->lauth->get_verify_account_token($token)) {
-            set_flash_alert('danger', 'Invalid verification token.');
+            set_flash_alert('error', 'Invalid verification token. ');
             redirect('auth/login');
             return;
         }
 
         if ($this->lauth->verify_account_now($token)) {
-            set_flash_alert('success', 'Account successfully verified.');
+            set_flash_alert('success', 'Email verified. Please wait for admin approval in your email. ');
         } else {
-            set_flash_alert('danger', 'Unable to verify account. Please try again.');
+            set_flash_alert('error', 'Unable to verify email. Please try again. ');
         }
 
         redirect('auth/login');
@@ -181,9 +207,9 @@ class Auth extends Controller {
         $mail->Port       = 465;                                    
 
         //Recipients
-        $mail->setFrom("genshinpromise@gmail.com", "GENSHIN CRUD"); // Sender Email and name
+        $mail->setFrom("genshinpromise@gmail.com", "TechStore"); // Sender Email and name
         $mail->addAddress($email);     //Add a recipient email  
-        $mail->addReplyTo("genshinpromise@gmail.com", "GENSHIN CRUD"); // reply to sender email
+        $mail->addReplyTo("genshinpromise@gmail.com", "TechStore"); // reply to sender email
 
         //Content
         $mail->isHTML(true);               //Set email format to HTML
@@ -228,7 +254,7 @@ class Auth extends Controller {
 						->matches('password', 'Passwords did not matched.');
 						if($this->form_validation->run()) {
 							if($this->lauth->reset_password_now($token, $password)) {
-								set_flash_alert('success', 'Password was successfully updated.');
+								set_flash_alert('success', 'Password was successfully updated. ');
                                 $token = "";
                                 redirect('auth/login');
 							} else {

@@ -43,21 +43,41 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 |
 */
 
-$router->get('/', 'Auth::index');
-$router->get('/home', '_AdminController::index');
-$router->get('/trash', 'CrudController::trash');
-$router->get('/home-user', 'UserController::index');
-$router->get('/trash-user', 'UserController::trash');
-$router->match('/create', '_ProductController::product', ['GET', 'POST']);
-$router->match('/upload', '_ProductController::upload', ['GET', 'POST']);
-$router->match('/update/{id}', '_ProductController::update', ['GET', 'POST']);
-$router->match('/delete/{id}', '_ProductController::delete', ['GET', 'POST']);
-$router->match('/restore/{id}', '_ProductController::restore', ['GET', 'POST']);
-$router->match('/soft-delete/{id}', '_ProductController::soft_delete', ['GET', 'POST']);
+$router->get('/', '_AdminController::index');
+$router->match('/settings', '_AdminController::settings', ['GET', 'POST']);
+$router->match('/report', '_TransactionController::report', ['GET', 'POST']);
 
-$router->match('/update-stock', '_InventoryController::update', ['GET', 'POST']);
 
-$router->match('/user-delete/{id}', '_StaffController::soft_delete', ['GET', 'POST']);
+$router->group('/product', function() use ($router){
+    $router->match('/add', '_ProductController::add', ['GET', 'POST']);
+    $router->match('/update', '_ProductController::update', ['GET', 'POST']);
+    $router->match('/delete/{id}', '_ProductController::delete', ['GET', 'POST']);
+    $router->match('/restore/{id}', '_ProductController::restore', ['GET', 'POST']);
+    $router->match('/soft-delete/{id}', '_ProductController::soft_delete', ['GET', 'POST']);
+});
+
+
+$router->group('/inventory', function() use ($router){
+    $router->match('/update-stock', '_InventoryController::update', ['GET', 'POST']);
+    $router->match('/update-csv', '_InventoryController::import_csv', ['GET', 'POST']);
+});
+
+
+$router->group('/staff', function() use ($router){
+    $router->match('/deactivate/{id}', '_StaffController::user_deactivate', ['GET', 'POST']);
+});
+
+$router->group('/applicant', function() use ($router){
+    $router->match('/reject/{id}', '_ApplicantController::user_reject', ['GET', 'POST']);
+    $router->match('/verify/{id}', '_ApplicantController::user_accept', ['GET', 'POST']);
+});
+
+
+$router->group('/pos', function() use ($router){
+    $router->get('', 'UserController::index');
+    $router->match('/transaction', 'UserController::transaction', ['GET', 'POST']);
+});
+
 
 $router->group('/auth', function() use ($router){
     $router->match('/register', 'Auth::register', ['POST', 'GET']);

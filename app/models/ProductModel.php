@@ -31,7 +31,53 @@ class ProductModel extends Model {
                 ->or_like('category', '%'.$q.'%');
 	    })
 	    ->where_null('deleted_at')
-        ->order_by('category', 'DESC');
+        ->order_by('price', 'ASC');
+
+
+            // Clone before pagination
+            $countQuery = clone $query;
+
+            $data['total_rows'] = $countQuery->select_count('*', 'count')
+                                            ->get()['count'];
+
+            $data['records'] = $query->pagination($records_per_page, $page)
+                                    ->get_all();
+
+            return $data;
+        }
+    }
+
+    public function inventory($q, $records_per_page = null, $page = null) {
+        if (is_null($page)) {
+            return $this->db->table('products')->get_all();
+        } else {
+            $query = $this->db->table('products');
+                
+            // Build LIKE conditions
+
+        if($q == ""){
+            $query->where_null('deleted_at')
+            ->order_by('category', 'ASC')
+            ->order_by('last_restock', 'ASC');
+        }
+        else if($q == "in"){
+            $query->where('stock', '>=', 5)
+            ->where_null('deleted_at')
+            ->order_by('category', 'ASC')
+            ->order_by('last_restock', 'ASC');
+        }
+        else if($q == "no"){
+            $query->where('stock', '<=', 0)
+            ->where_null('deleted_at')
+            ->order_by('category', 'ASC')
+            ->order_by('last_restock', 'ASC');
+        }
+        else{
+            $query->between('stock', 1, 4)
+            ->where_null('deleted_at')
+            ->order_by('category', 'ASC')
+            ->order_by('last_restock', 'ASC');
+        }
 
 
             // Clone before pagination
@@ -75,5 +121,11 @@ class ProductModel extends Model {
 
             return $data;
         }
+    }
+
+    public function stock() {
+            return $this->db->table('products')->where('stock', '>=', 1)
+                ->where_null('deleted_at')
+                ->order_by('category', 'DESC')->get_all();
     }
 }

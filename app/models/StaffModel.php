@@ -48,4 +48,35 @@ class StaffModel extends Model {
             return $data;
         }
     }
+
+    public function applicants($q, $records_per_page = null, $page = null) {
+        if (is_null($page)) {
+            return $this->db->table('users')->get_all();
+        } else {
+            $query = $this->db->table('users');
+                
+            // Build LIKE conditions
+
+	    $query->grouped(function($x) use ($q) {
+		    $x->like('username', '%'.$q.'%')
+                ->or_like('email', '%'.$q.'%');
+	    })
+        ->where('role', 'unverified')
+	    ->where_null('deleted_at')
+        ->where_not_null('updated_at')
+        ->order_by('updated_at', 'DESC');
+
+
+            // Clone before pagination
+            $countQuery = clone $query;
+
+            $data['total_rows'] = $countQuery->select_count('*', 'count')
+                                            ->get()['count'];
+
+            $data['records'] = $query->pagination($records_per_page, $page)
+                                    ->get_all();
+
+            return $data;
+        }
+    }
 }

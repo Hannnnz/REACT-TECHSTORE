@@ -1,3 +1,4 @@
+document.body.classList.remove("ready");
 document.addEventListener("DOMContentLoaded", () => {
     const sidebar = document.getElementById("sidebar");
     const sidebarToggle = document.getElementById("sidebar-toggle");
@@ -54,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if(targetSection.id === 'inventory') newTitle = 'Inventory Management';
             if(targetSection.id === 'users') newTitle = 'User Management';
             if(targetSection.id === 'transactions') newTitle = 'Transactions';
+            if(targetSection.id === 'reports') newTitle = 'Reports';
             if(targetSection.id === 'applicants') newTitle = 'Applicant Verification';
 
             pageTitleElement.textContent = newTitle;
@@ -166,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.disabled = false;
             form.submit();
             closeModal(modalId);
+            document.body.classList.add("loading");
             
             // Optional: Reset form inputs if exists
             if(form) form.reset();
@@ -260,3 +263,348 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+document.querySelectorAll('.open-product-delete-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const productId = btn.dataset.id;
+        const form = document.getElementById('product-delete-form');
+
+        form.action = `product/soft-delete/${productId}`;
+        openModal('modal-product-delete-confirm');
+    });
+});
+
+document.querySelectorAll('.open-applicant-reject-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const userId = btn.dataset.id;
+        const form = document.getElementById('applicant-reject-form'); // or another form if you want separate
+
+        form.action = `applicant/reject/${userId}`;
+        openModal('modal-applicant-reject-confirm');
+    });
+});
+
+document.querySelectorAll('.open-deactivate-staff-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const userId = btn.dataset.id;
+        const form = document.getElementById('staff-deactivate-form'); // or another form if you want separate
+
+        form.action = `staff/deactivate/${userId}`;
+        openModal('modal-deactivate-staff-confirm');
+    });
+});
+
+document.querySelectorAll('.open-product-edit-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+
+        const productId = btn.dataset.id;
+        const form = document.getElementById('form-edit-product');
+
+        // Auto-fill fields
+        document.getElementById('edit_product_name').value = btn.dataset.name;
+        document.getElementById('edit_category').value = btn.dataset.category;
+        document.getElementById('edit_unit_price').value = btn.dataset.price;
+        document.getElementById('edit_product_id').value = btn.dataset.id;
+        document.getElementById('edit_id').value = btn.dataset.id;
+
+        // Open modal
+        openModal('modal-edit-product');
+    });
+});
+
+document.querySelectorAll('.open-applicant-verify-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const applicantId = btn.dataset.id;
+        const applicantName = btn.dataset.name;
+        const form = document.getElementById('applicant-verify-form');
+        const message = document.getElementById('verify-message');
+
+        // Set dynamic action URL with applicant ID
+        const baseAction = "applicant/verify";
+        form.action = `${baseAction}/${applicantId}`;
+
+        // Update modal message with applicant name
+        message.innerHTML = `Approve <strong>${applicantName}</strong> as a new employee? This will move them to the Users list.`;
+
+        // Open modal
+        openModal('modal-verify-applicant');
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.open-transaction-receipt-modal').forEach(button => {
+        button.addEventListener('click', function() {
+            const receiptFile = this.dataset.receipt;
+            const imgEl = document.getElementById('receipt-img');
+            imgEl.src = "/public/uploads/" + receiptFile;
+            imgEl.alt = "Receipt " + receiptFile;
+            document.getElementById('modal-print-receipt').classList.remove('hidden');
+        });
+    });
+});
+
+function downloadReceiptAsPDF(button) {
+    const { jsPDF } = window.jspdf;
+    const img = document.getElementById('receipt-img');
+    if (!img.src) return alert("Receipt image not loaded!");
+
+    // --- Show processing feedback ---
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    button.disabled = true;
+
+    setTimeout(() => {
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "px",
+            format: [img.width, img.height]
+        });
+
+        pdf.addImage(img, 'PNG', 0, 0, img.width, img.height);
+
+        // Filename same as image
+        const filename = img.src.split('/').pop().replace(/\.[^/.]+$/, ".pdf");
+        pdf.save(filename);
+
+        // Restore button
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }, 100); // slight delay to show spinner
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    function exportInventoryCSV() {
+        const table = document.querySelector('#inventory .data-table');
+        if (!table) return;
+
+        let csvContent = '';
+        // Headers
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => `"${th.innerText}"`);
+        csvContent += headers.join(',') + '\n';
+
+        // Rows
+        table.querySelectorAll('tbody tr').forEach(row => {
+            const rowData = Array.from(row.querySelectorAll('td')).map((td, index) => {
+                let text = td.innerText.trim();
+
+                // Prepend single quote only for the ID column (assume it's the first column)
+                if (index === 0) text = `'${text}`;
+
+                return `"${text}"`;
+            });
+            csvContent += rowData.join(',') + '\n';
+        });
+
+        // Download CSV
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'inventory_data.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Replace handleFormSubmit for this modal
+    const exportBtn = document.querySelector('#modal-export-confirm .primary-btn');
+    exportBtn.addEventListener('click', function() {
+        const originalText = this.innerText;
+        this.innerText = 'Download started...'; // Show feedback
+        this.disabled = true;
+
+        exportInventoryCSV(); // Trigger CSV download
+
+        // Restore button after 2 seconds
+        setTimeout(() => {
+            this.innerText = originalText;
+            this.disabled = false;
+            closeModal('modal-export-confirm');
+        }, 2000);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('csv-file-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const form = document.getElementById('import-csv-form');
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.backgroundColor = '#f0f0f0';
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.backgroundColor = 'transparent';
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.backgroundColor = 'transparent';
+        const files = e.dataTransfer.files;
+        if (files.length && files[0].type === 'text/csv') {
+            fileInput.files = files; // okay here since user dropped a file
+            fileNameDisplay.textContent = files[0].name;
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.textContent = fileInput.files[0].name;
+        }
+    });
+
+    form.addEventListener('submit', (e) => {
+        if (!fileInput.files.length) {
+            e.preventDefault();
+        }
+    });
+});
+
+function generatePDFReport() {
+    // Open the PDF in a new tab
+    window.open('/report', '_blank');
+    // Close the modal
+    closeModal('modal-generate-report');
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const canvas = document.getElementById('salesPieChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    const rawData = Array.isArray(window.cashierSalesData) ? window.cashierSalesData : [];
+    const labels = rawData.length ? rawData.map(item => item.cashier) : ['No sales data yet'];
+    const totalSales = rawData.length ? rawData.map(item => Number(item.total_sales) || 0) : [0];
+    const totalTransactions = rawData.length ? rawData.map(item => Number(item.total_transactions) || 0) : [0];
+    let salesChartInstance = null;
+
+    const renderSalesChart = () => {
+        const computed = getComputedStyle(document.body);
+        const textColor = (computed.getPropertyValue('--clr-text-main') || '#f3f4f6').trim();
+        const borderColor = (computed.getPropertyValue('--clr-border') || 'rgba(148,163,184,0.3)').trim();
+        const primaryColor = (computed.getPropertyValue('--clr-primary') || '#38bdf8').trim();
+        const cardBg = (computed.getPropertyValue('--clr-card-bg') || '#111827').trim();
+        const hasData = rawData.length > 0;
+
+        const chartBackgroundPlugin = {
+            id: 'chartBackground',
+            beforeDraw(chart) {
+                const { ctx, chartArea } = chart;
+                if (!chartArea) return;
+                ctx.save();
+                ctx.fillStyle = cardBg;
+                ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+                ctx.restore();
+            }
+        };
+
+        const emptyStatePlugin = {
+            id: 'emptyStateMessage',
+            afterDraw(chart) {
+                if (hasData) return;
+                const {ctx, chartArea: {width, height}, top, left} = chart;
+                ctx.save();
+                ctx.fillStyle = textColor || '#9ca3af';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '600 18px "Poppins", sans-serif';
+                ctx.fillText('No sales activity recorded yet', left + width / 2, top + height / 2);
+                ctx.restore();
+            }
+        };
+
+        Chart.defaults.color = textColor || '#f3f4f6';
+        Chart.defaults.font.family = 'Poppins, "Segoe UI", sans-serif';
+
+        if (salesChartInstance) {
+            salesChartInstance.destroy();
+        }
+
+        salesChartInstance = new Chart(canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total Sales (₱)',
+                        data: totalSales,
+                        backgroundColor: hasData ? primaryColor : 'rgba(59,130,246,0.25)',
+                        borderColor: primaryColor || '#3b82f6',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        maxBarThickness: 32
+                    },
+                    {
+                        label: 'Total Transactions',
+                        data: totalTransactions,
+                        backgroundColor: hasData ? 'rgba(253,186,116,0.55)' : 'rgba(253,186,116,0.2)',
+                        borderColor: '#fbbf24',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        maxBarThickness: 32
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: { padding: 16 },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: textColor || '#f3f4f6',
+                            beginAtZero: true,
+                            callback: function(value) {
+                                return hasData ? value : '';
+                            }
+                        },
+                        grid: {
+                            color: borderColor || 'rgba(148,163,184,0.25)',
+                            borderDash: [4, 4]
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: textColor || '#f3f4f6'
+                        },
+                        grid: { color: 'transparent' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: textColor || '#f3f4f6', boxWidth: 20, padding: 10 }
+                    },
+                    tooltip: {
+                        enabled: hasData,
+                        callbacks: {
+                            label: function(context) {
+                                if (context.dataset.label === 'Total Sales (₱)') {
+                                    return '₱ ' + Number(context.raw || 0).toLocaleString();
+                                }
+                                return context.dataset.label + ': ' + Number(context.raw || 0).toLocaleString();
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [chartBackgroundPlugin, emptyStatePlugin]
+        });
+    };
+
+    renderSalesChart();
+
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            setTimeout(renderSalesChart, 60); // wait for classes to switch
+        });
+    }
+});
+
+
+
+document.body.classList.add("ready");

@@ -69,4 +69,4 @@ $database['main'] = array(
     'path'      => ''
 );
 
-?>
+?>                                                                          

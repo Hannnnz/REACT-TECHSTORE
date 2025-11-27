@@ -625,3 +625,18 @@ iframe {
 .modal-wrapper {
     z-index: 999; /* keep modal on top of iframe */
 }
+
+hr {
+  width: 100%;
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
+  flex: 0 0 auto;
+}
+
+label.error {
+    color: #ff4d4d !important;
+    font-size: 14px;
+    margin-top: 3px;
+    display: block;
+}

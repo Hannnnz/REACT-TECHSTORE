@@ -125,7 +125,9 @@ class Session {
 	    ini_set('session.use_strict_mode', 1);
 	    ini_set('session.use_cookies', 1);
 	    ini_set('session.use_only_cookies', 1);
-	    // ini_set('session.sid_length', $this->_get_sid_length());
+	    if (PHP_VERSION_ID < 80400) {
+	    	ini_set('session.sid_length', $this->_get_sid_length());
+	    }
 
 	    if ( ! empty($this->config['sess_driver']) AND $this->config['sess_driver'] == 'file' ) {
 			require_once 'Session/FileSessionHandler.php';
@@ -249,14 +251,14 @@ class Session {
 	 *
 	 * @return int SID length
 	 */
-	/* private function _get_sid_length()
+	private function _get_sid_length()
 	{
 		$bits_per_character = (int) ini_get('session.sid_bits_per_character');
 		$sid_length = (int) ini_get('session.sid_length');
 		if (($bits = $sid_length * $bits_per_character) < 160)
 			$sid_length += (int) ceil((160 % $bits) / $bits_per_character);
 		return $sid_length;
-	} */
+	}
 
 	/**
 	 * Regenerate Session ID

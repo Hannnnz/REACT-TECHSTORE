@@ -3,11 +3,13 @@
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Reset Password Email</title>
+    <title>Account Verification Email</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-      /* -------------------------------------
-        INLINED WITH htmlemail.io/inline
-    ------------------------------------- */
       /* -------------------------------------
         RESPONSIVE AND MOBILE FRIENDLY STYLES
     ------------------------------------- */
@@ -15,6 +17,8 @@
         table[class="body"] h1 {
           font-size: 28px !important;
           margin-bottom: 10px !important;
+          font-family: 'Poppins', sans-serif !important;
+          font-weight: 600 !important;
         }
         table[class="body"] p,
         table[class="body"] ul,
@@ -23,6 +27,7 @@
         table[class="body"] span,
         table[class="body"] a {
           font-size: 16px !important;
+          font-family: 'Poppins', sans-serif !important;
         }
         table[class="body"] .wrapper,
         table[class="body"] .article {
@@ -85,11 +90,11 @@
           line-height: inherit;
         }
         .btn-primary table td:hover {
-          background-color: #34495e !important;
+          background-color: #333333 !important;
         }
         .btn-primary a:hover {
-          background-color: #34495e !important;
-          border-color: #34495e !important;
+          background-color: #333333 !important;
+          border-color: #333333 !important;
         }
       }
     </style>
@@ -97,8 +102,8 @@
   <body
     class=""
     style="
-      background-color: #f6f6f6;
-      font-family: sans-serif;
+      background-color: #000000;
+      font-family: 'Poppins', sans-serif;
       -webkit-font-smoothing: antialiased;
       font-size: 14px;
       line-height: 1.4;
@@ -122,7 +127,7 @@
         visibility: hidden;
         width: 0;
       "
-      >LavaLust Authentication Library</span
+      >TechStore Account Verification</span
     >
     <table
       border="0"
@@ -134,19 +139,19 @@
         mso-table-lspace: 0pt;
         mso-table-rspace: 0pt;
         width: 100%;
-        background-color: #f6f6f6;
+        background-color: #000000;
       "
     >
       <tr>
         <td
-          style="font-family: sans-serif; font-size: 14px; vertical-align: top"
+          style="font-family: 'Poppins', sans-serif; font-size: 14px; vertical-align: top"
         >
           &nbsp;
         </td>
         <td
           class="container"
           style="
-            font-family: sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-size: 14px;
             vertical-align: top;
             margin: 0 auto;
@@ -165,7 +170,6 @@
               padding: 10px;
             "
           >
-            <!-- START CENTERED WHITE CONTAINER -->
             <table
               class="main"
               style="
@@ -174,15 +178,14 @@
                 mso-table-rspace: 0pt;
                 width: 100%;
                 background: #ffffff;
-                border-radius: 3px;
+                border-radius: 10px;
               "
             >
-              <!-- START MAIN CONTENT AREA -->
               <tr>
                 <td
                   class="wrapper"
                   style="
-                    font-family: sans-serif;
+                    font-family: 'Poppins', sans-serif;
                     font-size: 14px;
                     vertical-align: top;
                     box-sizing: border-box;
@@ -203,32 +206,35 @@
                     <tr>
                       <td
                         style="
-                          font-family: sans-serif;
+                          font-family: 'Poppins', sans-serif;
                           font-size: 14px;
                           vertical-align: top;
                         "
                       >
+                        <h1 style="font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 600; margin: 0 0 15px 0; color: #000000;">
+                          Verify Your Account
+                        </h1>
                         <p
                           style="
-                            font-family: sans-serif;
+                            font-family: 'Poppins', sans-serif;
                             font-size: 14px;
-                            font-weight: normal;
+                            font-weight: 300;
                             margin: 0;
                             margin-bottom: 15px;
                           "
                         >
-                          Hi there, Traveler!
+                          Hi there, Techmate!
                         </p>
                         <p
                           style="
-                            font-family: sans-serif;
+                            font-family: 'Poppins', sans-serif;
                             font-size: 14px;
-                            font-weight: normal;
+                            font-weight: 300;
                             margin: 0;
                             margin-bottom: 15px;
                           "
                         >
-                          Someone has requested to create an account in our website using this email. If you
+                          Someone has requested to create an account for the TechStore POS System using this email. If you
                           did this action, click the button below to verify your account.
                         </p>
                         <table
@@ -249,7 +255,7 @@
                               <td
                                 align="left"
                                 style="
-                                  font-family: sans-serif;
+                                  font-family: 'Poppins', sans-serif;
                                   font-size: 14px;
                                   vertical-align: top;
                                   padding-bottom: 15px;
@@ -270,32 +276,33 @@
                                     <tr>
                                       <td
                                         style="
-                                          font-family: sans-serif;
+                                          font-family: 'Poppins', sans-serif;
                                           font-size: 14px;
                                           vertical-align: top;
-                                          background-color: #3498db;
-                                          border-radius: 5px;
+                                          background-color: #000000;
+                                          border-radius: 20px;
                                           text-align: center;
                                         "
                                       >
                                         <a
-                                          href="http://webdev-britolancekianne.page.gd/auth/verify-email/?token={token}"
+                                          href="http://l-and-d-tech-store.gamer.gd/auth/verify-email/?token={token}"
                                           target="_blank"
                                           style="
                                             display: inline-block;
                                             color: #ffffff;
-                                            background-color: #3498db;
-                                            border: solid 1px #3498db;
-                                            border-radius: 5px;
+                                            background-color: #000000;
+                                            border: solid 1px #000000;
+                                            border-radius: 20px;
                                             box-sizing: border-box;
                                             cursor: pointer;
                                             text-decoration: none;
-                                            font-size: 14px;
-                                            font-weight: bold;
+                                            font-size: 12px;
+                                            font-weight: 600;
                                             margin: 0;
-                                            padding: 12px 25px;
-                                            text-transform: capitalize;
-                                            border-color: #3498db;
+                                            padding: 12px 45px;
+                                            text-transform: uppercase;
+                                            font-family: 'Poppins', sans-serif;
+                                            letter-spacing: 1px;
                                           "
                                           >Verify Account</a
                                         >
@@ -309,48 +316,24 @@
                         </table>
                         <p
                           style="
-                            font-family: sans-serif;
+                            font-family: 'Poppins', sans-serif;
                             font-size: 14px;
-                            font-weight: normal;
+                            font-weight: 300;
                             margin: 0;
                             margin-bottom: 15px;
                           "
                         >
-                          But if you are not aware of this, just ignore this
-                          email.<br /><br />Best Regards!<br />
+                          If you are not aware of this, please ignore this
+                          email.<br /><br />Best Regards,<br />The TechStore Team
                         </p>
-                        <p
-                          style="
-                            font-family: sans-serif;
-                            font-size: 14px;
-                            font-weight: normal;
-                            margin: 0;
-                            margin-bottom: 15px;
-                          "
-                        >
-                          Ad astra abyssosque!
-                        </p>
-                        <p
-                          style="
-                            font-family: sans-serif;
-                            font-size: 14px;
-                            font-weight: normal;
-                            margin: 0;
-                            margin-bottom: 15px;
-                          "
-                        >
-                          Good luck! Hope you enjoy the game.
-                        </p>
-                      </td>
+                        </td>
                     </tr>
                   </table>
                 </td>
               </tr>
 
-              <!-- END MAIN CONTENT AREA -->
-            </table>
+              </table>
 
-            <!-- START FOOTER -->
             <div
               class="footer"
               style="
@@ -375,7 +358,7 @@
                   <td
                     class="content-block powered-by"
                     style="
-                      font-family: sans-serif;
+                      font-family: 'Poppins', sans-serif;
                       vertical-align: top;
                       padding-bottom: 10px;
                       padding-top: 10px;
@@ -384,28 +367,15 @@
                       text-align: center;
                     "
                   >
-                    Powered by
-                    <a
-                      href="https://github.com/ronmarasigan/LavaLust"
-                      style="
-                        color: #999999;
-                        font-size: 12px;
-                        text-align: center;
-                        text-decoration: none;
-                      "
-                      >LavaLust</a
-                    >.
+                    © 2025 TechStore. All rights reserved.
                   </td>
                 </tr>
               </table>
             </div>
-            <!-- END FOOTER -->
-
-            <!-- END CENTERED WHITE CONTAINER -->
-          </div>
+            </div>
         </td>
         <td
-          style="font-family: sans-serif; font-size: 14px; vertical-align: top"
+          style="font-family: 'Poppins', sans-serif; font-size: 14px; vertical-align: top"
         >
           &nbsp;
         </td>
